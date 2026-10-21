@@ -1,9 +1,9 @@
-const CACHE = 'ja-bibliotheque-v5';
+const CACHE = 'ja-bibliotheque-v6';
 const ASSETS = [
   './',
   './index.html',
   './style.css?v=12',
-  './app.js?v=16',
+  './app.js?v=17',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png'

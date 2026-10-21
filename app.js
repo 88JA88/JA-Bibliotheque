@@ -49,7 +49,7 @@
     document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode && !placing));
     $('undo').disabled=!history.length; $('copy').disabled=!selectedCases.size; $('paste').disabled=!clipboard;
     $('case-count').textContent=data.cases.length+' case'+(data.cases.length===1?'':'s'); $('book-count').textContent=data.books.length;
-    $('hint').textContent=placing ? 'Touchez le carré où se trouve ce livre.' : data.facadeLocked ? 'Façade enregistrée. Étirez l’angle inférieur droit pour ajuster sa taille.' : mode==='draw' ? (start ? 'Choisissez le croisement opposé pour terminer la case.' : 'Choisissez deux croisements opposés pour dessiner une case.') : mode==='paste' ? 'Choisissez le croisement où placer le coin supérieur gauche de la copie.' : selectedCases.size ? `${selectedCases.size} case${selectedCases.size > 1 ? 's sélectionnées' : ' sélectionnée'} — appuyez sur Suppr pour supprimer. Maj permet d’ajouter une case.` : 'Cliquez dans une case pour la sélectionner. Maintenez Maj pour en sélectionner plusieurs.';
+    $('hint').textContent=placing ? 'Touchez le carré où se trouve ce livre.' : data.facadeLocked ? '' : mode==='draw' ? (start ? 'Choisissez le croisement opposé pour terminer la case.' : 'Choisissez deux croisements opposés pour dessiner une case.') : mode==='paste' ? 'Choisissez le croisement où placer le coin supérieur gauche de la copie.' : selectedCases.size ? `${selectedCases.size} case${selectedCases.size > 1 ? 's sélectionnées' : ' sélectionnée'} — appuyez sur Suppr pour supprimer. Maj permet d’ajouter une case.` : 'Cliquez dans une case pour la sélectionner. Maintenez Maj pour en sélectionner plusieurs.';
     renderCanvas(); renderBooks();
   }
   function renderCanvas() {
