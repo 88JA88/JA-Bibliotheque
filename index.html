@@ -21,7 +21,7 @@
       <div class="panel-heading"><div><h2 id="facade-title">Ma bibliothèque</h2><button id="notice-button" class="quiet notice-button" type="button">Notice</button></div><div class="facade-actions"><button id="undo" class="quiet" disabled>↶ Annuler</button><button id="save-facade" class="primary">Enregistrer la façade</button></div></div>
       <div id="grid-settings" class="grid-settings"><label>Largeur <span><input id="cols" type="number" min="1" max="30" value="8"> modules</span></label><label>Hauteur <span><input id="rows" type="number" min="1" max="30" value="5"> modules</span></label><button id="resize" class="quiet">Appliquer</button></div>
       <div id="toolbar" class="toolbar" role="group" aria-label="Actions sur la façade"><button data-mode="draw" class="mode active">✚ Dessiner</button><button data-mode="select" class="mode">▧ Sélectionner</button><button id="copy" class="quiet" disabled>Copier</button><button id="paste" class="quiet" disabled>Coller</button></div>
-      <div class="grid-heading"><p id="hint" class="hint" aria-live="polite"></p><button id="place-book" class="primary" disabled>Placer</button></div>
+      <div class="grid-heading"><p id="hint" class="hint" aria-live="polite"></p><div class="placement-actions"><button id="place-book" class="primary" disabled>Placer</button><button id="move-book" class="primary" disabled>Déplacer</button></div></div>
       <div class="canvas-wrap"><div id="canvas" class="canvas" tabindex="-1" aria-label="Façade de la bibliothèque"></div></div>
       <div class="canvas-footer"><span><i class="legend-red"></i> Modules <i class="legend-blue"></i> Demi-modules</span><span id="case-count">0 case</span></div>
     </section>
@@ -39,7 +39,7 @@
 <dialog id="details-dialog" aria-labelledby="details-title"><div class="dialog-heading"><div><span class="section-number">FICHE DU LIVRE</span><h2 id="details-title"></h2></div><button type="button" class="close" data-close="details-dialog" aria-label="Fermer">×</button></div><dl class="book-details"><div><dt>Auteur</dt><dd id="details-author"></dd></div><div><dt id="details-param1-label"></dt><dd id="details-param1"></dd></div><div><dt id="details-param2-label"></dt><dd id="details-param2"></dd></div><div><dt>Emplacement</dt><dd id="details-location"></dd></div></dl><div class="dialog-actions"><button type="button" id="details-delete" class="quiet danger">Supprimer le livre</button><button type="button" id="details-edit" class="primary">Modifier</button><button type="button" class="quiet" data-close="details-dialog">Fermer</button></div></dialog>
 <dialog id="fields-dialog"><form id="fields-form"><div class="dialog-heading"><div><span class="section-number">PERSONNALISATION</span><h2>Mes paramètres</h2></div><button type="button" class="close" data-close="fields-dialog" aria-label="Fermer">×</button></div><p>Choisissez le nom du paramètre libre de vos livres, par exemple « Genre » ou « Collection ».</p><label>Paramètre libre <input name="field1" required maxlength="40"></label><div class="dialog-actions"><button type="button" class="quiet" data-close="fields-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="app.js?v=17"></script>
+<script src="app.js?v=18"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));

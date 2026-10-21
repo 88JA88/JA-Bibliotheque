@@ -43,9 +43,12 @@
     $('grid-settings').hidden=!!data.facadeLocked; $('toolbar').hidden=!!data.facadeLocked;
     $('save-facade').textContent=data.facadeLocked ? 'Modifier la façade' : 'Enregistrer la façade';
     const activeBook=data.books.find(b=>b.id===selectedBook);
-    $('place-book').disabled=!activeBook || !data.cases.length;
-    $('place-book').textContent=activeBook?.location ? 'Placement enregistré' : 'Placer';
-    $('place-book').title=activeBook ? (activeBook.location ? `Modifier l’emplacement de ${activeBook.title}` : `Placer ${activeBook.title}`) : 'Sélectionnez d’abord un livre';
+    const hasLocation=!!activeBook?.location;
+    $('place-book').disabled=!activeBook || !data.cases.length || hasLocation;
+    $('place-book').textContent=hasLocation ? 'Placement enregistré' : 'Placer';
+    $('place-book').title=activeBook ? (hasLocation ? `Emplacement de ${activeBook.title} enregistré` : `Placer ${activeBook.title}`) : 'Sélectionnez d’abord un livre';
+    $('move-book').disabled=!hasLocation || !data.cases.length;
+    $('move-book').title=hasLocation ? `Déplacer ${activeBook.title}` : 'Sélectionnez un livre déjà placé';
     document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode && !placing));
     $('undo').disabled=!history.length; $('copy').disabled=!selectedCases.size; $('paste').disabled=!clipboard;
     $('case-count').textContent=data.cases.length+' case'+(data.cases.length===1?'':'s'); $('book-count').textContent=data.books.length;
@@ -153,7 +156,9 @@
     deleteSelectedCases();
   }, true);
   $('undo').onclick=()=>{if(!history.length)return;data=history.pop();selectedCases.clear();selectedLocation=null;start=null;placing=false;mode=data.facadeLocked?'view':'draw';if(!data.books.some(b=>b.id===selectedBook))selectedBook=null;changed();message('Dernière modification annulée.');};
-  $('place-book').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(!book || !data.cases.length)return;placing=true;start=null;selectedCases.clear();render();if(matchMedia('(max-width: 900px)').matches) $('facade-title').scrollIntoView({behavior:'smooth',block:'start'});};
+  function startPlacement(){const book=data.books.find(b=>b.id===selectedBook);if(!book || !data.cases.length)return;placing=true;start=null;selectedCases.clear();render();if(matchMedia('(max-width: 900px)').matches) $('facade-title').scrollIntoView({behavior:'smooth',block:'start'});}
+  $('place-book').onclick=startPlacement;
+  $('move-book').onclick=startPlacement;
   $('details-edit').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(!book)return;$('details-dialog').close();openBook(book);};
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
