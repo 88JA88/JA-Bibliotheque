@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="820" viewBox="0 0 700 820"><rect width="700" height="820" fill="#f5f3ed"/><rect x="94" y="50" width="512" height="512" fill="#f4c542"/>
+  <title id="titre">Logo JA</title>
+  <g
+    transform="translate(94 103)"
+    fill="none"
+    stroke="#000"
+    stroke-width="11"
+    stroke-linecap="square">
+    <path d="M143 97 A158 158 0 0 1 245 41"/>
+    <path d="M99 198 H245 V364 A166 166 0 0 1 99 198 Z"/>
+    <path d="M245 41 V364"/>
+    <path d="M264 41 V365"/>
+    <path d="M264 41 A158 158 0 0 1 380 300"/>
+    <path d="M264 198 H409"/>
+  </g>
+<text x="350" y="650" text-anchor="middle" fill="#273b35" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="44" font-weight="600">JA-Bibliothèque</text><text x="350" y="700" text-anchor="middle" fill="#718075" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="22">Icône de l’application</text></svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="titre">
+  <title id="titre">Logo JA</title>
+  <g
+    transform="translate(0 53)"
+    fill="none"
+    stroke="#000"
+    stroke-width="11"
+    stroke-linecap="square">
+    <path d="M143 97 A158 158 0 0 1 245 41"/>
+    <path d="M99 198 H245 V364 A166 166 0 0 1 99 198 Z"/>
+    <path d="M245 41 V364"/>
+    <path d="M264 41 V365"/>
+    <path d="M264 41 A158 158 0 0 1 380 300"/>
+    <path d="M264 198 H409"/>
+  </g>
+</svg>
