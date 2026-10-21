@@ -65,7 +65,7 @@
           const btn=document.createElement('button'); btn.type='button'; btn.className='case-cell'+(highlighted?' highlight':'');
           Object.assign(btn.style,{left:(col/(c.w*2)*100)+'%',top:(row/(c.h*2)*100)+'%',width:(100/(c.w*2))+'%',height:(100/(c.h*2))+'%'});
           btn.setAttribute('aria-label',`Emplacement ${locationIndex(x,y)}`);btn.title=locationIndex(x,y);
-          if(placing) btn.addEventListener('click',()=>{checkpoint();book.location={caseId:c.id,x,y};selectedLocation=null;placing=false;changed();message(`Emplacement ${locationIndex(x,y)} enregistré.`);});
+          if(placing) btn.addEventListener('click',()=>{checkpoint();book.location={caseId:c.id,x,y};selectedLocation=null;placing=false;changed();message('Placement enregistré.');});
           else if(data.facadeLocked) btn.addEventListener('click',()=>{selectedBook=null;selectedLocation={caseId:c.id,x,y};render();});
           else btn.style.pointerEvents='none';
           el.append(btn);
