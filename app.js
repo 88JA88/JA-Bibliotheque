@@ -44,7 +44,8 @@
     $('save-facade').textContent=data.facadeLocked ? 'Modifier la façade' : 'Enregistrer la façade';
     const activeBook=data.books.find(b=>b.id===selectedBook);
     $('place-book').disabled=!activeBook || !data.cases.length;
-    $('place-book').title=activeBook ? `Placer ${activeBook.title}` : 'Sélectionnez d’abord un livre';
+    $('place-book').textContent=activeBook?.location ? 'Placement enregistré' : 'Placer';
+    $('place-book').title=activeBook ? (activeBook.location ? `Modifier l’emplacement de ${activeBook.title}` : `Placer ${activeBook.title}`) : 'Sélectionnez d’abord un livre';
     document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode && !placing));
     $('undo').disabled=!history.length; $('copy').disabled=!selectedCases.size; $('paste').disabled=!clipboard;
     $('case-count').textContent=data.cases.length+' case'+(data.cases.length===1?'':'s'); $('book-count').textContent=data.books.length;

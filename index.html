@@ -39,7 +39,7 @@
 <dialog id="details-dialog" aria-labelledby="details-title"><div class="dialog-heading"><div><span class="section-number">FICHE DU LIVRE</span><h2 id="details-title"></h2></div><button type="button" class="close" data-close="details-dialog" aria-label="Fermer">×</button></div><dl class="book-details"><div><dt>Auteur</dt><dd id="details-author"></dd></div><div><dt id="details-param1-label"></dt><dd id="details-param1"></dd></div><div><dt id="details-param2-label"></dt><dd id="details-param2"></dd></div><div><dt>Emplacement</dt><dd id="details-location"></dd></div></dl><div class="dialog-actions"><button type="button" id="details-delete" class="quiet danger">Supprimer le livre</button><button type="button" id="details-edit" class="primary">Modifier</button><button type="button" class="quiet" data-close="details-dialog">Fermer</button></div></dialog>
 <dialog id="fields-dialog"><form id="fields-form"><div class="dialog-heading"><div><span class="section-number">PERSONNALISATION</span><h2>Mes paramètres</h2></div><button type="button" class="close" data-close="fields-dialog" aria-label="Fermer">×</button></div><p>Choisissez le nom du paramètre libre de vos livres, par exemple « Genre » ou « Collection ».</p><label>Paramètre libre <input name="field1" required maxlength="40"></label><div class="dialog-actions"><button type="button" class="quiet" data-close="fields-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
