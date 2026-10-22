@@ -168,7 +168,24 @@
   $('fields-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,a=f.elements.field1.value.trim();if(!a)return;checkpoint();data.fields=[a,'Prêté à'];$('fields-dialog').close();changed();};
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   $('search').oninput=renderBooks;$('filter-field').onchange=renderBooks;$('sort-field').onchange=renderBooks;
-  $('export').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ma-bibliotheque.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+  $('export').onclick=async()=>{
+    const contents=JSON.stringify(data,null,2), blob=new Blob([contents],{type:'application/json'});
+    if(typeof window.showSaveFilePicker==='function'){
+      try{
+        const handle=await window.showSaveFilePicker({suggestedName:'ma-bibliotheque.json',types:[{description:'Sauvegarde JSON',accept:{'application/json':['.json']}}]});
+        const writable=await handle.createWritable();await writable.write(blob);await writable.close();
+        message('Sauvegarde enregistrée dans le dossier choisi.');return;
+      }catch(error){if(error?.name==='AbortError')return;}
+    }
+    const file=new File([blob],'ma-bibliotheque.json',{type:'application/json'});
+    const shareData={files:[file],title:'Sauvegarde de Ma bibliothèque'};
+    if(navigator.maxTouchPoints>0 && typeof navigator.share==='function' && typeof navigator.canShare==='function' && navigator.canShare(shareData)){
+      try{await navigator.share(shareData);message('Partage terminé. Vérifiez la destination choisie.');return;}
+      catch(error){if(error?.name==='AbortError')return;}
+    }
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ma-bibliotheque.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    message('Fichier téléchargé. Déplacez-le vers iCloud Drive > Ma Bibliothèque.');
+  };
   $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!valid(incoming))throw Error('invalid');if(confirm('Restaurer cette sauvegarde remplacera les données actuellement affichées. Continuer ?')){checkpoint();data=incoming;selectedCases.clear();selectedBook=null;selectedLocation=null;placing=false;start=null;mode=data.facadeLocked?'view':'draw';clipboard=null;changed();message('Sauvegarde restaurée.');}}catch(_){alert('Ce fichier ne contient pas une sauvegarde valide de Ma bibliothèque.');}e.target.value='';};
   render();
 })();

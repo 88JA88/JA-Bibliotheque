@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
-<header class="topbar"><div class="app-identity"><div class="app-brand"><img src="icons/icon-192.png" alt="Logo JA"><h1>JA-Bibliothèque</h1></div><div class="backup"><button id="export" class="quiet">Exporter</button><label class="quiet import-control">Importer<input id="import" type="file" accept=".json,application/json" aria-label="Importer une sauvegarde JSON"></label><button id="notice-button" class="quiet notice-button" type="button">Notice</button></div></div><span id="save-status" class="save-status">● Enregistré sur cet appareil</span></header>
+<header class="topbar"><div class="app-identity"><div class="app-brand"><img src="icons/icon-192.png" alt="Logo JA"><h1>JA-Bibliothèque</h1></div><div class="backup"><button id="export" class="quiet">Exporter</button><label class="quiet import-control">Importer<input id="import" type="file" accept=".json,application/json" aria-label="Importer une sauvegarde JSON"></label><button id="notice-button" class="quiet notice-button" type="button">Notice</button><button id="refresh-app" class="quiet" type="button">Actualiser l’application</button></div></div><span id="save-status" class="save-status">● Enregistré sur cet appareil</span></header>
 <main>
   <div class="layout">
     <section class="panel facade-panel" aria-labelledby="facade-title">
@@ -34,13 +34,60 @@
     </section>
   </div>
 </main>
-<dialog id="notice-dialog" aria-labelledby="notice-title"><div class="dialog-heading"><h2 id="notice-title">Notice rapide</h2><button type="button" class="close" data-close="notice-dialog" aria-label="Fermer">×</button></div><div class="notice-content"><h3>Dessiner la façade</h3><p>Au premier démarrage, la façade comporte 40 cases déjà enregistrées : 8 colonnes et 5 lignes. Choisissez « Modifier la façade » pour la modifier. Vous pouvez changer les dimensions de la grille puis choisir « Appliquer ». Pour dessiner une case, choisissez « Dessiner », puis deux croisements opposés. Les lignes bleues permettent de dessiner par demi-module.</p><p>Avec « Sélectionner », cliquez sur une case ; maintenez Maj pour en choisir plusieurs. Vous pouvez copier et coller la sélection ou la supprimer avec la touche Suppr. « Annuler » permet de revenir sur une erreur.</p><p>Choisissez « Enregistrer la façade » lorsqu’elle est prête. Étirez ensuite son angle inférieur droit pour ajuster sa taille. « Modifier la façade » permet de la modifier à nouveau.</p><h3>Ajouter et retrouver un livre</h3><p>Choisissez « Ajouter un livre », remplissez sa fiche et enregistrez-la. Sélectionnez son titre, puis « Placer » et son emplacement dans une case. Plusieurs livres peuvent partager un emplacement.</p><p>Un clic sur un titre montre sa place ; un clic sur un emplacement de la façade enregistrée colore les titres qui s’y trouvent. Un clic droit ou un appui prolongé sur un titre ouvre sa fiche. La recherche, le filtre et le tri aident à retrouver les livres.</p><p>Vous pouvez personnaliser le nom du paramètre libre. Le champ « Prêté à » permet d’indiquer un nom. Un repère comme B(g)-3 désigne la moitié gauche de la colonne B, ligne 3.</p><h3>Sauvegarder</h3><p>Les données sont enregistrées dans le navigateur de cet appareil. Utilisez régulièrement « Exporter » pour garder une copie JSON. « Importer » restaure une copie en remplaçant les données affichées.</p></div><div class="dialog-actions"><button type="button" class="quiet" data-close="notice-dialog">Fermer</button></div></dialog>
+<dialog id="notice-dialog" aria-labelledby="notice-title"><div class="dialog-heading"><h2 id="notice-title">Notice rapide</h2><button type="button" class="close" data-close="notice-dialog" aria-label="Fermer">×</button></div><div class="notice-content"><h3>Dessiner la façade</h3><p>Au premier démarrage, la façade comporte 40 cases déjà enregistrées : 8 colonnes et 5 lignes. Choisissez « Modifier la façade » pour la modifier. Vous pouvez changer les dimensions de la grille puis choisir « Appliquer ». Pour dessiner une case, choisissez « Dessiner », puis deux croisements opposés. Les lignes bleues permettent de dessiner par demi-module.</p><p>Avec « Sélectionner », cliquez sur une case ; maintenez Maj pour en choisir plusieurs. Vous pouvez copier et coller la sélection ou la supprimer avec la touche Suppr. « Annuler » permet de revenir sur une erreur.</p><p>Choisissez « Enregistrer la façade » lorsqu’elle est prête. Étirez ensuite son angle inférieur droit pour ajuster sa taille. « Modifier la façade » permet de la modifier à nouveau.</p><h3>Ajouter et retrouver un livre</h3><p>Choisissez « Ajouter un livre », remplissez sa fiche et enregistrez-la. Sélectionnez son titre, puis « Placer » et son emplacement dans une case. Plusieurs livres peuvent partager un emplacement.</p><p>Un clic sur un titre montre sa place ; un clic sur un emplacement de la façade enregistrée colore les titres qui s’y trouvent. Un clic droit ou un appui prolongé sur un titre ouvre sa fiche. La recherche, le filtre et le tri aident à retrouver les livres.</p><p>Vous pouvez personnaliser le nom du paramètre libre. Le champ « Prêté à » permet d’indiquer un nom. Un repère comme B(g)-3 désigne la moitié gauche de la colonne B, ligne 3.</p><h3>Sauvegarder</h3><p>Les données sont enregistrées dans le navigateur de cet appareil. Utilisez régulièrement « Exporter » pour garder une copie JSON. « Importer » restaure une copie en remplaçant les données affichées.</p><p>Sur iPhone et iPad, « Exporter » ouvre la feuille de partage : choisissez « Enregistrer dans Fichiers », puis le dossier iCloud Drive voulu. Sur Mac, Safari télécharge le fichier ; choisissez « Demander pour chaque téléchargement » dans Safari &gt; Réglages &gt; Général pour pouvoir sélectionner iCloud Drive &gt; Ma Bibliothèque. Si vous utilisez un navigateur sans fenêtre d’enregistrement, déplacez le fichier téléchargé dans ce dossier avec Fichiers ou le Finder.</p><p>L’application demande toujours un choix explicite et n’enregistre jamais silencieusement dans iCloud Drive.</p></div><div class="dialog-actions"><button type="button" class="quiet" data-close="notice-dialog">Fermer</button></div></dialog>
 <dialog id="book-dialog"><form id="book-form"><div class="dialog-heading"><div><span class="section-number">MON CATALOGUE</span><h2 id="dialog-title">Ajouter un livre</h2></div><button type="button" class="close" data-close="book-dialog" aria-label="Fermer">×</button></div><label>Titre <input name="title" required maxlength="200" autocomplete="off"></label><label>Auteur <input name="author" maxlength="200" autocomplete="off"></label><label><span id="param1-label"></span><input name="param1" maxlength="200" autocomplete="off"></label><label>Prêté à : <input name="param2" placeholder="Nom" aria-label="Prêté à : nom" maxlength="200" autocomplete="off"></label><p class="form-help">Après l’enregistrement, sélectionnez le livre, puis utilisez « Placer » pour choisir son emplacement sur la façade.</p><div class="dialog-actions"><button type="button" class="quiet" data-close="book-dialog">Annuler</button><button class="primary" type="submit">Enregistrer</button></div></form></dialog>
 <dialog id="details-dialog" aria-labelledby="details-title"><div class="dialog-heading"><div><span class="section-number">FICHE DU LIVRE</span><h2 id="details-title"></h2></div><button type="button" class="close" data-close="details-dialog" aria-label="Fermer">×</button></div><dl class="book-details"><div><dt>Auteur</dt><dd id="details-author"></dd></div><div><dt id="details-param1-label"></dt><dd id="details-param1"></dd></div><div><dt id="details-param2-label"></dt><dd id="details-param2"></dd></div><div><dt>Emplacement</dt><dd id="details-location"></dd></div></dl><div class="dialog-actions"><button type="button" id="details-delete" class="quiet danger">Supprimer le livre</button><button type="button" id="details-edit" class="primary">Modifier</button><button type="button" class="quiet" data-close="details-dialog">Fermer</button></div></dialog>
 <dialog id="fields-dialog"><form id="fields-form"><div class="dialog-heading"><div><span class="section-number">PERSONNALISATION</span><h2>Mes paramètres</h2></div><button type="button" class="close" data-close="fields-dialog" aria-label="Fermer">×</button></div><p>Choisissez le nom du paramètre libre de vos livres, par exemple « Genre » ou « Collection ».</p><label>Paramètre libre <input name="field1" required maxlength="40"></label><div class="dialog-actions"><button type="button" class="quiet" data-close="fields-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="app.js?v=18"></script>
+<script src="app.js?v=19"></script>
 <script>
+  document.getElementById('refresh-app').addEventListener('click', async () => {
+    const button = document.getElementById('refresh-app');
+    const toast = document.getElementById('toast');
+    const showMessage = text => {
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showMessage.timer);
+      showMessage.timer = setTimeout(() => toast.classList.remove('show'), 3000);
+    };
+    if (!('serviceWorker' in navigator)) {
+      showMessage('Impossible de vérifier les mises à jour dans ce navigateur.');
+      return;
+    }
+    button.disabled = true;
+    const oldController = navigator.serviceWorker.controller;
+    let controllerChanged = false;
+    const onControllerChange = () => { controllerChanged = true; };
+    navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        showMessage('Aucune mise à jour ne peut être vérifiée ici.');
+        return;
+      }
+      await registration.update();
+      const worker = registration.installing || registration.waiting;
+      if (worker) {
+        await new Promise(resolve => {
+          if (worker.state === 'activated' || worker.state === 'redundant') return resolve();
+          worker.addEventListener('statechange', () => {
+            if (worker.state === 'activated' || worker.state === 'redundant') resolve();
+          }, {once: false});
+          setTimeout(resolve, 8000);
+        });
+      }
+      if (controllerChanged || (oldController && navigator.serviceWorker.controller !== oldController)) {
+        window.location.reload();
+        return;
+      }
+      showMessage('Application à jour.');
+    } catch (_) {
+      showMessage('Vérification impossible. Réessayez avec une connexion Internet.');
+    } finally {
+      navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+      button.disabled = false;
+    }
+  });
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
   }
