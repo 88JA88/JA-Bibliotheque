@@ -75,3 +75,31 @@ main{padding-top:12px;padding-bottom:35px}
 /* Commandes générales placées sous le nom de l’application. */
 .app-identity{display:flex;flex-direction:column;gap:7px}.topbar{align-items:flex-start}.topbar>.save-status{padding-top:15px}.backup{justify-content:flex-start}.notice-button{margin-top:0}
 @media(max-width:500px){.topbar>.save-status{padding-top:0}.app-identity{width:100%}}
+
+/* Catalogue : commandes sur une ligne et liste immédiatement visible. */
+.books-panel{display:flex;flex-direction:column;height:min(650px,calc(100dvh - 130px));min-height:360px}
+.books-heading{margin-bottom:7px}
+.catalog-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-bottom:6px}
+.catalog-toolbar .search-wrap{flex:1;min-width:0}
+.catalog-toolbar .search-wrap input{min-width:0}
+.catalog-toolbar .quiet,.catalog-toolbar .primary{padding:7px 9px}
+.books{flex:1;min-height:0;max-height:none;overflow-y:auto;scrollbar-gutter:stable}
+@media(max-width:900px){.books-panel{height:min(560px,calc(100dvh - 90px))}}
+@media(max-width:500px){.books-panel{height:min(520px,calc(100dvh - 70px));min-height:320px}.catalog-toolbar{gap:4px}.catalog-toolbar .quiet,.catalog-toolbar .primary{padding:7px 6px;font-size:11px}.catalog-toolbar .search-wrap{padding:0 7px}.catalog-toolbar .search-wrap span{font-size:18px}}
+
+/* Façade : concentrer toute la hauteur disponible sur la grille. */
+.topbar{padding-top:7px;padding-bottom:6px}
+.app-identity{gap:3px}
+main{padding-top:6px}
+.facade-panel{padding-top:10px}
+.facade-panel .panel-heading{margin-bottom:5px}
+.facade-panel .grid-settings{padding:6px}
+.facade-panel .toolbar{margin-top:6px}
+.facade-panel .hint:empty{display:none}
+.facade-panel .grid-heading{margin:3px 0}
+.facade-panel .canvas-wrap{padding:26px 32px}
+@media(max-width:500px){.topbar{padding-top:6px;padding-bottom:5px}.facade-panel{padding-top:9px}.facade-panel .canvas-wrap{padding:24px 20px}}
+
+/* Rapprocher la façade et le catalogue, côte à côte comme l’un sous l’autre. */
+.layout{gap:8px}
+@media(max-width:900px){.layout{gap:6px}}

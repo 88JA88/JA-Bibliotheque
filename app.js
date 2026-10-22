@@ -51,7 +51,7 @@
     $('move-book').title=hasLocation ? `Déplacer ${activeBook.title}` : 'Sélectionnez un livre déjà placé';
     document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode && !placing));
     $('undo').disabled=!history.length; $('copy').disabled=!selectedCases.size; $('paste').disabled=!clipboard;
-    $('case-count').textContent=data.cases.length+' case'+(data.cases.length===1?'':'s'); $('book-count').textContent=data.books.length;
+    $('book-count').textContent=data.books.length;
     $('hint').textContent=placing ? 'Touchez le carré où se trouve ce livre.' : data.facadeLocked ? '' : mode==='draw' ? (start ? 'Choisissez le croisement opposé pour terminer la case.' : 'Choisissez deux croisements opposés pour dessiner une case.') : mode==='paste' ? 'Choisissez le croisement où placer le coin supérieur gauche de la copie.' : selectedCases.size ? `${selectedCases.size} case${selectedCases.size > 1 ? 's sélectionnées' : ' sélectionnée'} — appuyez sur Suppr pour supprimer. Maj permet d’ajouter une case.` : 'Cliquez dans une case pour la sélectionner. Maintenez Maj pour en sélectionner plusieurs.';
     renderCanvas(); renderBooks();
   }
@@ -107,6 +107,7 @@
     filter.replaceChildren(...fields.map(([v,l])=>new Option(l,v)));filter.value=oldFilter;
     document.querySelectorAll('[data-sort]').forEach(button=>{const active=button.dataset.sort===sortBy;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     const query=$('search').value.trim().toLocaleLowerCase('fr');
+    $('search-button').title=query ? 'Effacer la recherche et afficher tous les livres' : 'Saisir une recherche';
     const books=data.books.filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
     const list=$('books');list.replaceChildren();
     if(!books.length){const empty=document.createElement('div');empty.className='empty';const strong=document.createElement('strong');strong.textContent=data.books.length?'Aucun livre trouvé':'Votre catalogue commence ici';empty.append(strong,document.createTextNode(data.books.length?'Essayez une autre recherche.':'Ajoutez votre premier livre pour le retrouver facilement.'));list.append(empty);return;}
@@ -163,13 +164,13 @@
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
   $('add-book').onclick=()=>openBook();
-  $('search-toggle').onclick=()=>{const panel=$('catalog-search'),open=panel.hidden;panel.hidden=!open;$('search-toggle').setAttribute('aria-expanded',String(open));if(open)$('search').focus();};
+  $('search-button').onclick=()=>{const search=$('search');if(search.value){search.value='';renderBooks();message('Tous les livres sont affichés.');}else search.focus();};
   document.querySelectorAll('[data-sort]').forEach(button=>button.onclick=()=>{sortBy=button.dataset.sort;renderBooks();});
   $('book-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,values={};for(const k of ['title','author','param1','param2'])values[k]=f.elements[k].value.trim();if(!values.title)return;checkpoint();if(editing)Object.assign(data.books.find(b=>b.id===editing),values);else data.books.push({id:id(),...values,location:null});$('book-dialog').close();changed();message('Livre enregistré.');};
   $('fields-button').onclick=()=>{const f=$('fields-form');f.elements.field1.value=data.fields[0];$('fields-dialog').showModal();};
   $('fields-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,a=f.elements.field1.value.trim();if(!a)return;checkpoint();data.fields=[a,'Prêté à'];$('fields-dialog').close();changed();};
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-  $('search').oninput=renderBooks;$('filter-field').onchange=renderBooks;
+  $('search').oninput=renderBooks;$('search').onsearch=renderBooks;$('filter-field').onchange=renderBooks;
   $('export').onclick=async()=>{
     const contents=JSON.stringify(data,null,2), blob=new Blob([contents],{type:'application/json'});
     if(typeof window.showSaveFilePicker==='function'){
