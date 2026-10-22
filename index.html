@@ -11,7 +11,7 @@
   <title>JA-Bibliothèque</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 <header class="topbar"><div class="app-identity"><div class="app-brand"><img src="icons/icon-192.png" alt="Logo JA"><h1>JA-Bibliothèque</h1></div><div class="backup"><button id="export" class="quiet">Exporter</button><label class="quiet import-control">Importer<input id="import" type="file" accept=".json,application/json" aria-label="Importer une sauvegarde JSON"></label><button id="notice-button" class="quiet notice-button" type="button">Notice</button><button id="refresh-app" class="quiet" type="button">Actualiser l’application</button></div></div><span id="save-status" class="save-status">● Enregistré sur cet appareil</span></header>
@@ -23,14 +23,26 @@
       <div id="toolbar" class="toolbar" role="group" aria-label="Actions sur la façade"><button data-mode="draw" class="mode active">✚ Dessiner</button><button data-mode="select" class="mode">▧ Sélectionner</button><button id="copy" class="quiet" disabled>Copier</button><button id="paste" class="quiet" disabled>Coller</button></div>
       <div class="grid-heading"><p id="hint" class="hint" aria-live="polite"></p><div class="placement-actions"><button id="place-book" class="primary" disabled>Placer</button><button id="move-book" class="primary" disabled>Déplacer</button></div></div>
       <div class="canvas-wrap"><div id="canvas" class="canvas" tabindex="-1" aria-label="Façade de la bibliothèque"></div></div>
-      <div class="canvas-footer"><span><i class="legend-red"></i> Modules <i class="legend-blue"></i> Demi-modules</span><span id="case-count">0 case</span></div>
+      <div class="canvas-footer"><span id="case-count">0 case</span></div>
     </section>
     <section class="panel books-panel" aria-labelledby="books-title">
-      <div class="panel-heading"><div><span class="section-number">02 / LES LIVRES</span><h2 id="books-title">Mes livres <span id="book-count" class="count">0</span></h2></div><button id="add-book" class="primary">＋ Ajouter un livre</button></div>
-      <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Rechercher un livre…" aria-label="Rechercher un livre"></div>
-      <div class="list-controls"><label>Filtrer par <select id="filter-field"></select></label><label>Trier par <select id="sort-field"></select></label></div>
-      <button id="fields-button" class="text-button">⚙ Personnaliser les paramètres</button>
-      <p class="book-list-help">Clic : voir l’emplacement · Clic droit ou appui prolongé : ouvrir la fiche</p><div id="books" class="books"></div>
+      <div class="panel-heading books-heading">
+        <h2 id="books-title">Mes livres <span id="book-count" class="count">0</span></h2>
+        <div class="books-actions">
+          <button id="search-toggle" class="quiet" type="button" aria-expanded="false" aria-controls="catalog-search">⌕ Rechercher un livre</button>
+          <button id="add-book" class="primary">＋ Ajouter un livre</button>
+          <button id="fields-button" class="quiet" type="button">⚙ Paramètres</button>
+        </div>
+      </div>
+      <div id="catalog-search" class="catalog-search" hidden>
+        <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Rechercher un livre…" aria-label="Rechercher un livre"></div>
+        <label>Filtrer par <select id="filter-field"></select></label>
+      </div>
+      <div class="sort-controls" role="group" aria-label="Trier les livres">
+        <button class="quiet active" type="button" data-sort="title" aria-pressed="true">Trier par titre</button>
+        <button class="quiet" type="button" data-sort="author" aria-pressed="false">Trier par auteur</button>
+      </div>
+      <div id="books" class="books"></div>
     </section>
   </div>
 </main>
@@ -39,7 +51,7 @@
 <dialog id="details-dialog" aria-labelledby="details-title"><div class="dialog-heading"><div><span class="section-number">FICHE DU LIVRE</span><h2 id="details-title"></h2></div><button type="button" class="close" data-close="details-dialog" aria-label="Fermer">×</button></div><dl class="book-details"><div><dt>Auteur</dt><dd id="details-author"></dd></div><div><dt id="details-param1-label"></dt><dd id="details-param1"></dd></div><div><dt id="details-param2-label"></dt><dd id="details-param2"></dd></div><div><dt>Emplacement</dt><dd id="details-location"></dd></div></dl><div class="dialog-actions"><button type="button" id="details-delete" class="quiet danger">Supprimer le livre</button><button type="button" id="details-edit" class="primary">Modifier</button><button type="button" class="quiet" data-close="details-dialog">Fermer</button></div></dialog>
 <dialog id="fields-dialog"><form id="fields-form"><div class="dialog-heading"><div><span class="section-number">PERSONNALISATION</span><h2>Mes paramètres</h2></div><button type="button" class="close" data-close="fields-dialog" aria-label="Fermer">×</button></div><p>Choisissez le nom du paramètre libre de vos livres, par exemple « Genre » ou « Collection ».</p><label>Paramètre libre <input name="field1" required maxlength="40"></label><div class="dialog-actions"><button type="button" class="quiet" data-close="fields-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="app.js?v=19"></script>
+<script src="app.js?v=20"></script>
 <script>
   document.getElementById('refresh-app').addEventListener('click', async () => {
     const button = document.getElementById('refresh-app');

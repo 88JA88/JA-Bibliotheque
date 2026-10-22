@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id);
   const KEY = 'ma-bibliotheque-v1';
   const fresh = () => ({version:1, cols:8, rows:5, fields:['Paramètre 1','Prêté à'], cases:Array.from({length:40},(_,i)=>({id:`initial-${i}`,x:i%8,y:Math.floor(i/8),w:1,h:1})), books:[], facadeLocked:true, facadeScale:48});
-  let data = fresh(), mode = 'draw', start = null, selectedCases = new Set(), clipboard = null, selectedBook = null, selectedLocation = null, placing = false, history = [], editing = null;
+  let data = fresh(), mode = 'draw', start = null, selectedCases = new Set(), clipboard = null, selectedBook = null, selectedLocation = null, placing = false, history = [], editing = null, sortBy = 'title';
   const id = () => (globalThis.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const clone = value => JSON.parse(JSON.stringify(value));
   // Une case peut commencer ou finir sur une demi-division de module.
@@ -29,9 +29,9 @@
     return true;
   }
   let needsInitialSave=false;
-  try { const saved = localStorage.getItem(KEY); if (saved) { const parsed = JSON.parse(saved); if (valid(parsed)) data = parsed; else setTimeout(() => alert('Les données enregistrées ne sont pas valides. Vous pouvez importer une sauvegarde.'), 0); } else needsInitialSave=true; } catch (_) { setTimeout(() => alert('Impossible de lire les données enregistrées sur cet appareil.'), 0); }
+  try { const saved = localStorage.getItem(KEY); if (saved) { const parsed = JSON.parse(saved); if (valid(parsed)) data = parsed; else { $('save-status').textContent = '⚠ Données enregistrées illisibles : importez une sauvegarde'; setTimeout(() => alert('Les données enregistrées ne sont pas valides. Vous pouvez importer une sauvegarde.'), 0); } } else needsInitialSave=true; } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable' : '⚠ Stockage local inaccessible : exportez vos données'; setTimeout(() => alert('Impossible de lire les données enregistrées sur cet appareil. La façade affichée peut ne pas être votre dernière version.'), 0); }
   if (data.facadeLocked) mode='view';
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); $('save-status').textContent = '● Enregistré sur cet appareil'; } catch (_) { $('save-status').textContent = '⚠ Enregistrement impossible : exportez vos données'; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable — utilisez la PWA publiée' : '● Enregistré sur cet appareil'; } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : enregistrement impossible — exportez vos données' : '⚠ Enregistrement impossible : exportez vos données'; } }
   if (needsInitialSave) save();
   function checkpoint() { history.push(clone(data)); if (history.length > 30) history.shift(); }
   function changed() { save(); render(); }
@@ -103,11 +103,11 @@
   }
   function renderBooks(){
     const fields=[['all','Tous les champs'],['title','Titre'],['author','Auteur'],['param1',data.fields[0]],['param2','Prêté à']];
-    const filter=$('filter-field'),sort=$('sort-field'), oldFilter=filter.value||'all',oldSort=sort.value||'title';
+    const filter=$('filter-field'), oldFilter=filter.value||'all';
     filter.replaceChildren(...fields.map(([v,l])=>new Option(l,v)));filter.value=oldFilter;
-    sort.replaceChildren(...fields.slice(1).map(([v,l])=>new Option(l,v)));sort.value=oldSort;
+    document.querySelectorAll('[data-sort]').forEach(button=>{const active=button.dataset.sort===sortBy;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     const query=$('search').value.trim().toLocaleLowerCase('fr');
-    const books=data.books.filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sort.value].localeCompare(b[sort.value],'fr',{sensitivity:'base'}));
+    const books=data.books.filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
     const list=$('books');list.replaceChildren();
     if(!books.length){const empty=document.createElement('div');empty.className='empty';const strong=document.createElement('strong');strong.textContent=data.books.length?'Aucun livre trouvé':'Votre catalogue commence ici';empty.append(strong,document.createTextNode(data.books.length?'Essayez une autre recherche.':'Ajoutez votre premier livre pour le retrouver facilement.'));list.append(empty);return;}
     books.forEach(b=>{
@@ -163,11 +163,13 @@
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
   $('add-book').onclick=()=>openBook();
+  $('search-toggle').onclick=()=>{const panel=$('catalog-search'),open=panel.hidden;panel.hidden=!open;$('search-toggle').setAttribute('aria-expanded',String(open));if(open)$('search').focus();};
+  document.querySelectorAll('[data-sort]').forEach(button=>button.onclick=()=>{sortBy=button.dataset.sort;renderBooks();});
   $('book-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,values={};for(const k of ['title','author','param1','param2'])values[k]=f.elements[k].value.trim();if(!values.title)return;checkpoint();if(editing)Object.assign(data.books.find(b=>b.id===editing),values);else data.books.push({id:id(),...values,location:null});$('book-dialog').close();changed();message('Livre enregistré.');};
   $('fields-button').onclick=()=>{const f=$('fields-form');f.elements.field1.value=data.fields[0];$('fields-dialog').showModal();};
   $('fields-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,a=f.elements.field1.value.trim();if(!a)return;checkpoint();data.fields=[a,'Prêté à'];$('fields-dialog').close();changed();};
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-  $('search').oninput=renderBooks;$('filter-field').onchange=renderBooks;$('sort-field').onchange=renderBooks;
+  $('search').oninput=renderBooks;$('filter-field').onchange=renderBooks;
   $('export').onclick=async()=>{
     const contents=JSON.stringify(data,null,2), blob=new Blob([contents],{type:'application/json'});
     if(typeof window.showSaveFilePicker==='function'){
