@@ -4,7 +4,9 @@ Application web installable pour dessiner une bibliothèque et retrouver ses liv
 
 ## Utiliser l’application
 
-Ouvrez `index.html` dans un navigateur. Les données restent sur l’appareil ; utilisez **Nouvelle** pour créer une bibliothèque vide ou **Importer** pour ajouter une bibliothèque depuis un fichier JSON. Chaque bibliothèque est sélectionnable dans la liste « Bibliothèque » et renommable avec **Renommer**.
+Ouvrez `index.html` dans un navigateur. Les données restent sur l’appareil ; utilisez **Nouvelle bibliothèque** pour créer une bibliothèque vide ou **Importer** pour ajouter une bibliothèque depuis un fichier JSON actuel. Chaque bibliothèque est sélectionnable dans la liste et renommable avec **Renommer**. Son nom est enregistré dans le JSON et sert automatiquement de nom de fichier à l’export.
+
+La façade utilise une seule grille de petites cases : choisissez sa largeur et sa hauteur, puis placez directement les livres dans les petits carrés. Les lignes rouges servent uniquement de séparations visuelles. Les sauvegardes JSON actuelles utilisent ce même format.
 
 Le fichier `ma-bibliotheque.json` est un exemple de configuration actuelle et peut être importé.
 
