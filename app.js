@@ -2,8 +2,9 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const KEY = 'ma-bibliotheque-v1';
+  const LIBRARIES_KEY = 'ma-bibliotheque-libraries-v1';
   const fresh = () => ({version:1, cols:8, rows:5, fields:['Paramètre 1','Prêté à'], cases:Array.from({length:40},(_,i)=>({id:`initial-${i}`,x:i%8,y:Math.floor(i/8),w:1,h:1})), books:[], facadeLocked:true, facadeScale:48});
-  let data = fresh(), mode = 'draw', start = null, selectedCases = new Set(), clipboard = null, selectedBook = null, selectedLocation = null, placing = false, history = [], editing = null, sortBy = 'title';
+  let data = fresh(), libraries = [], activeLibraryId = null, mode = 'draw', start = null, selectedCases = new Set(), clipboard = null, selectedBook = null, selectedLocation = null, placing = false, history = [], editing = null, sortBy = 'title';
   const id = () => (globalThis.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const clone = value => JSON.parse(JSON.stringify(value));
   // Une case peut commencer ou finir sur une demi-division de module.
@@ -28,17 +29,30 @@
     for (const b of v.books) { if (!b || typeof b.id !== 'string' || bookIds.has(b.id) || !['title','author','param1','param2'].every(k => typeof b[k] === 'string') || !b.title.trim()) return false; bookIds.add(b.id); if (b.location != null) { const c = v.cases.find(c => c.id === b.location.caseId); if (!c) return false; const l=b.location; if (l.x !== undefined || l.y !== undefined) { if (!Number.isInteger(l.x) || !Number.isInteger(l.y) || l.x < c.x*2 || l.y < c.y*2 || l.x >= (c.x+c.w)*2 || l.y >= (c.y+c.h)*2) return false; } else if (!Number.isInteger(l.column) || l.column < 0 || l.column >= columnCount(c)) return false; } }
     return true;
   }
+  function validLibraries(v) { return !!v && v.version===1 && typeof v.activeId==='string' && Array.isArray(v.libraries) && v.libraries.length && v.libraries.every(l=>l && typeof l.id==='string' && typeof l.name==='string' && l.name.trim() && valid(l.data)) && v.libraries.some(l=>l.id===v.activeId); }
+  function activeLibrary() { return libraries.find(l=>l.id===activeLibraryId); }
+  function libraryNameFromFile(file) { return file.name.replace(/\.json$/i,'').trim() || 'Bibliothèque importée'; }
+  function uniqueLibraryName(name) { const names=new Set(libraries.map(l=>l.name)); if(!names.has(name))return name; for(let n=2;;n++){const candidate=`${name} ${n}`;if(!names.has(candidate))return candidate;} }
   let needsInitialSave=false;
-  try { const saved = localStorage.getItem(KEY); if (saved) { const parsed = JSON.parse(saved); if (valid(parsed)) data = parsed; else { $('save-status').textContent = '⚠ Données enregistrées illisibles : importez une sauvegarde'; setTimeout(() => alert('Les données enregistrées ne sont pas valides. Vous pouvez importer une sauvegarde.'), 0); } } else needsInitialSave=true; } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable' : '⚠ Stockage local inaccessible : exportez vos données'; setTimeout(() => alert('Impossible de lire les données enregistrées sur cet appareil. La façade affichée peut ne pas être votre dernière version.'), 0); }
+  try {
+    let invalidLibraries=false;
+    const savedLibraries=localStorage.getItem(LIBRARIES_KEY);
+    if(savedLibraries){try{const parsed=JSON.parse(savedLibraries);if(validLibraries(parsed)){libraries=parsed.libraries;activeLibraryId=parsed.activeId;data=activeLibrary().data;}else invalidLibraries=true;}catch(_){invalidLibraries=true;}}
+    if(!libraries.length){const saved=localStorage.getItem(KEY);if(saved){try{const parsed=JSON.parse(saved);if(valid(parsed))data=parsed;else invalidLibraries=true;}catch(_){invalidLibraries=true;}}else needsInitialSave=true;activeLibraryId=id();libraries=[{id:activeLibraryId,name:'Ma bibliothèque',data}];needsInitialSave=true;}
+    if(invalidLibraries){$('save-status').textContent='⚠ Données enregistrées illisibles : importez une sauvegarde';setTimeout(()=>alert('Certaines données enregistrées ne sont pas valides. Vous pouvez importer une sauvegarde.'),0);}
+  } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable' : '⚠ Stockage local inaccessible : exportez vos données'; setTimeout(() => alert('Impossible de lire les données enregistrées sur cet appareil. La façade affichée peut ne pas être votre dernière version.'), 0); }
   if (data.facadeLocked) mode='view';
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable — utilisez la PWA publiée' : '● Enregistré sur cet appareil'; } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : enregistrement impossible — exportez vos données' : '⚠ Enregistrement impossible : exportez vos données'; } }
+  function save() { try { const current=activeLibrary();if(current)current.data=data;localStorage.setItem(LIBRARIES_KEY,JSON.stringify({version:1,activeId:activeLibraryId,libraries}));localStorage.setItem(KEY, JSON.stringify(data)); $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : sauvegarde non fiable — utilisez la PWA publiée' : '● Enregistré sur cet appareil'; } catch (_) { $('save-status').textContent = location.protocol === 'file:' ? '⚠ Fichier local : enregistrement impossible — exportez vos données' : '⚠ Enregistrement impossible : exportez vos données'; } }
   if (needsInitialSave) save();
   function checkpoint() { history.push(clone(data)); if (history.length > 30) history.shift(); }
   function changed() { save(); render(); }
   function message(s) { const t=$('toast'); t.textContent=s; t.classList.add('show'); clearTimeout(message.timer); message.timer=setTimeout(()=>t.classList.remove('show'),3000); }
   function overlap(a,b) { return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y; }
   function setMode(next) { mode=next; start=null; placing=false; if(next !== 'select') selectedCases.clear(); render(); }
+  function renderLibraries(){const selector=$('library-selector');selector.replaceChildren(...libraries.map(l=>new Option(l.name,l.id)));selector.value=activeLibraryId;}
+  function switchLibrary(nextId){if(nextId===activeLibraryId)return;save();const next=libraries.find(l=>l.id===nextId);if(!next)return;activeLibraryId=nextId;data=next.data;mode=data.facadeLocked?'view':'draw';start=null;selectedCases.clear();clipboard=null;selectedBook=null;selectedLocation=null;placing=false;history=[];render();message(`Bibliothèque « ${next.name} » affichée.`);}
   function render() {
+    renderLibraries();
     $('cols').value=data.cols; $('rows').value=data.rows;
     $('grid-settings').hidden=!!data.facadeLocked; $('toolbar').hidden=!!data.facadeLocked;
     $('save-facade').textContent=data.facadeLocked ? 'Modifier la façade' : 'Enregistrer la façade';
@@ -163,6 +177,9 @@
   $('details-edit').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(!book)return;$('details-dialog').close();openBook(book);};
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
+  $('new-library').onclick=()=>{const name=prompt('Nom de la nouvelle bibliothèque :','Nouvelle bibliothèque');if(name===null)return;const nextName=name.trim();if(!nextName){alert('Choisissez un nom pour cette bibliothèque.');return;}if(libraries.some(l=>l.name===nextName)){alert('Une bibliothèque porte déjà ce nom.');return;}activeLibraryId=id();data=fresh();libraries.push({id:activeLibraryId,name:nextName,data});mode='view';start=null;selectedCases.clear();clipboard=null;selectedBook=null;selectedLocation=null;placing=false;history=[];changed();message(`Bibliothèque « ${nextName} » créée.`);};
+  $('library-selector').onchange=e=>switchLibrary(e.currentTarget.value);
+  $('rename-library').onclick=()=>{const library=activeLibrary(),name=prompt('Nouveau nom de cette bibliothèque :',library?.name);if(name===null)return;const nextName=name.trim();if(!nextName){alert('Choisissez un nom pour cette bibliothèque.');return;}if(libraries.some(l=>l.id!==library.id&&l.name===nextName)){alert('Une autre bibliothèque porte déjà ce nom.');return;}library.name=nextName;save();render();message('Bibliothèque renommée.');};
   $('add-book').onclick=()=>openBook();
   $('search-button').onclick=()=>{const search=$('search');if(search.value){search.value='';renderBooks();message('Tous les livres sont affichés.');}else search.focus();};
   document.querySelectorAll('[data-sort]').forEach(button=>button.onclick=()=>{sortBy=button.dataset.sort;renderBooks();});
@@ -181,7 +198,7 @@
       }catch(error){if(error?.name==='AbortError')return;}
     }
     const file=new File([blob],'ma-bibliotheque.json',{type:'application/json'});
-    const shareData={files:[file],title:'Sauvegarde de Ma bibliothèque'};
+    const shareData={files:[file]};
     if(navigator.maxTouchPoints>0 && typeof navigator.share==='function' && typeof navigator.canShare==='function' && navigator.canShare(shareData)){
       try{await navigator.share(shareData);message('Partage terminé. Vérifiez la destination choisie.');return;}
       catch(error){if(error?.name==='AbortError')return;}
@@ -189,6 +206,6 @@
     const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ma-bibliotheque.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     message('Fichier téléchargé. Déplacez-le vers iCloud Drive > Ma Bibliothèque.');
   };
-  $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!valid(incoming))throw Error('invalid');if(confirm('Restaurer cette sauvegarde remplacera les données actuellement affichées. Continuer ?')){checkpoint();data=incoming;selectedCases.clear();selectedBook=null;selectedLocation=null;placing=false;start=null;mode=data.facadeLocked?'view':'draw';clipboard=null;changed();message('Sauvegarde restaurée.');}}catch(_){alert('Ce fichier ne contient pas une sauvegarde valide de Ma bibliothèque.');}e.target.value='';};
+  $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!valid(incoming))throw Error('invalid');const name=uniqueLibraryName(libraryNameFromFile(file));if(confirm(`Ajouter « ${name} » comme bibliothèque distincte et l’afficher ?`)){activeLibraryId=id();libraries.push({id:activeLibraryId,name,data:incoming});data=incoming;selectedCases.clear();selectedBook=null;selectedLocation=null;placing=false;start=null;mode=data.facadeLocked?'view':'draw';clipboard=null;history=[];changed();message(`Bibliothèque « ${name} » importée.`);}}catch(_){alert('Ce fichier ne contient pas une sauvegarde valide de Ma bibliothèque.');}e.target.value='';};
   render();
 })();

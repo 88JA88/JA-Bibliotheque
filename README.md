@@ -4,7 +4,7 @@ Application web installable pour dessiner une bibliothèque et retrouver ses liv
 
 ## Utiliser l’application
 
-Ouvrez `index.html` dans un navigateur. Les données restent sur l’appareil ; utilisez **Exporter** pour enregistrer la configuration courante dans un fichier JSON et **Importer** pour la restaurer sur cet appareil ou un autre.
+Ouvrez `index.html` dans un navigateur. Les données restent sur l’appareil ; utilisez **Nouvelle** pour créer une bibliothèque vide ou **Importer** pour ajouter une bibliothèque depuis un fichier JSON. Chaque bibliothèque est sélectionnable dans la liste « Bibliothèque » et renommable avec **Renommer**.
 
 Le fichier `ma-bibliotheque.json` est un exemple de configuration actuelle et peut être importé.
 

@@ -22,4 +22,4 @@ Les colonnes sont repérées par des lettres et les lignes par des chiffres : pa
 
 ## Sauvegarder et restaurer
 
-Les données sont enregistrées dans le navigateur de l’appareil utilisé. Utilisez régulièrement **Exporter** pour conserver une copie JSON. Sur le même appareil ou sur un autre, **Importer** permet de restaurer cette copie ; elle remplace les données affichées.
+Les données sont enregistrées dans le navigateur de l’appareil utilisé. Utilisez **Nouvelle** pour créer une bibliothèque vide ou **Importer** pour ajouter une bibliothèque depuis une copie JSON. Utilisez la liste « Bibliothèque » au-dessus de la façade pour passer de l’une à l’autre, puis **Renommer** pour changer son nom. Exporter conserve une copie JSON de la bibliothèque affichée.
