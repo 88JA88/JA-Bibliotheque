@@ -104,7 +104,7 @@ main{padding-top:6px}
 .facade-panel .hint:empty{display:none}
 .facade-panel .grid-heading{margin:3px 0}
 .facade-panel .canvas-wrap{padding:26px 32px}
-@media(max-width:500px){.topbar{padding-top:6px;padding-bottom:5px}.facade-panel{padding-top:9px}.facade-panel .canvas-wrap{padding:24px 20px}}
+@media(max-width:500px){.topbar{padding-top:6px;padding-bottom:5px}.facade-panel{padding-top:9px}.facade-panel .canvas-wrap{padding:24px 20px 24px 40px}}
 
 /* Rapprocher la façade et le catalogue, côte à côte comme l’un sous l’autre. */
 .layout{gap:8px}
