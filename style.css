@@ -7,7 +7,7 @@
 
 /* Les étagères restent lisibles sans masquer les séparations rouges. */
 .case{background:#737873;border-color:transparent}.case.selected{background:#737873;border-color:#c63f3b}.case.found{border-color:transparent}
-.grid-cell{position:absolute;z-index:2;border:0;padding:0;background:transparent}.grid-cell:hover{background:#ffffff33}.grid-cell.highlight{background:#d6ad67aa}
+.grid-cell{position:absolute;z-index:2;border:0;padding:0;background:transparent}.grid-cell:hover{background:#ffffff33}.grid-cell.selected{box-shadow:inset 0 0 0 2px #c63f3b}.grid-cell.occupied{background:#d6ad67aa}
 
 /* La sélection reste visible sans masquer la grille. */
 .case.selected{border:2px solid #c63f3b;box-shadow:none;background:transparent}
