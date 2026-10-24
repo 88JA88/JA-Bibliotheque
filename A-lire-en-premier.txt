@@ -1,0 +1,34 @@
+À LIRE EN PREMIER — JA-BIBLIOTHÈQUE
+
+Le principe essentiel
+
+Une bibliothèque correspond à un fichier JSON. Ce fichier contient ses livres, sa façade et ses emplacements. Il est la copie de référence à conserver.
+
+Préparer un dossier
+
+1. Créez, dans votre espace de fichiers habituel ou dans un espace partagé, un dossier nommé par exemple « Mes bibliothèques ».
+2. Placez-y le fichier reçu, par exemple « isabelle.json ».
+3. Gardez ce même fichier : ne créez pas une nouvelle bibliothèque si vous avez déjà reçu son JSON.
+
+Commencer
+
+1. Ouvrez JA-Bibliothèque dans votre navigateur.
+2. Cliquez sur « Importer ».
+3. Choisissez le fichier JSON reçu dans votre dossier.
+4. Ajoutez vos livres et dessinez votre façade.
+
+Enregistrer le travail
+
+1. Cliquez sur « Enregistrer » à la fin de votre travail.
+2. Choisissez le même fichier JSON dans votre dossier.
+3. Si le système demande confirmation, choisissez « Remplacer ».
+
+Ainsi, « isabelle.json » reste votre unique fichier de travail. Évitez les fichiers nommés « isabelle 2.json » : ils créent de la confusion.
+
+Utiliser plusieurs appareils ou partager une bibliothèque
+
+Avant de travailler sur un autre appareil, importez d’abord le JSON le plus récent depuis le dossier partagé. Ne modifiez pas la même bibliothèque sur deux appareils en même temps.
+
+Sauvegarde de secours
+
+De temps en temps, dupliquez vous-même le fichier JSON dans le dossier et ajoutez une date à son nom, par exemple « isabelle-sauvegarde-2026-10-24.json ». Cette copie sert uniquement de secours ; le fichier sans date reste le fichier de travail.
