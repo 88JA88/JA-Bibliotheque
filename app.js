@@ -31,7 +31,6 @@
   function filenameFromLibraryName(name) { const clean=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); return `${clean||'ma-bibliotheque'}.json`; }
   function deletionArchiveFilename(name) { const now=new Date(),part=n=>String(n).padStart(2,'0'),date=`${now.getFullYear()}-${part(now.getMonth()+1)}-${part(now.getDate())}-${part(now.getHours())}${part(now.getMinutes())}${part(now.getSeconds())}`,base=filenameFromLibraryName(name).replace(/\.json$/,'');return `${base}-avant-suppression-${date}.json`; }
   function downloadJson(contents,filename) { const url=URL.createObjectURL(new Blob([contents],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
-  function uniqueLibraryName(name) { const names=new Set(libraries.map(l=>l.name)); if(!names.has(name))return name; for(let n=2;;n++){const candidate=`${name} ${n}`;if(!names.has(candidate))return candidate;} }
   let needsInitialSave=false;
   try {
     let invalidLibraries=false;
@@ -203,18 +202,18 @@
       try{
         const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Sauvegarde JSON',accept:{'application/json':['.json']}}]});
         const writable=await handle.createWritable();await writable.write(blob);await writable.close();
-        message('Sauvegarde enregistrée dans le dossier choisi.');return;
+        message('Fichier de travail JSON mis à jour.');return;
       }catch(error){if(error?.name==='AbortError')return;}
     }
     const file=new File([blob],filename,{type:'application/json'});
     const shareData={files:[file]};
     if(navigator.maxTouchPoints>0 && typeof navigator.share==='function' && typeof navigator.canShare==='function' && navigator.canShare(shareData)){
-      try{await navigator.share(shareData);message('Partage terminé. Vérifiez la destination choisie.');return;}
+      try{await navigator.share(shareData);message('Choisissez le fichier JSON existant, puis « Remplacer ».');return;}
       catch(error){if(error?.name==='AbortError')return;}
     }
     downloadJson(contents,filename);
-    message('Fichier téléchargé. Déplacez-le vers iCloud Drive > Ma Bibliothèque.');
+    message('Fichier téléchargé. Remplacez le JSON de travail dans iCloud Drive.');
   };
-  $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!valid(incoming))throw Error('invalid');const initialPlaceholder=libraries.length===1&&isEmptyLibrary(activeLibrary());const name=initialPlaceholder?incoming.libraryName.trim():uniqueLibraryName(incoming.libraryName.trim());incoming.libraryName=name;const question=initialPlaceholder?`Charger « ${name} » comme unique bibliothèque ?`:`Ajouter « ${name} » comme bibliothèque distincte et l’afficher ?`;if(confirm(question)){if(initialPlaceholder){libraries=[{id:activeLibraryId,name,data:incoming}];}else{activeLibraryId=id();libraries.push({id:activeLibraryId,name,data:incoming});}data=incoming;selectedCases.clear();selectedSeparators.clear();selectedBook=null;selectedLocation=null;placing=false;removingBook=false;start=null;mode=data.facadeLocked?'view':'select';clipboard=null;history=[];changed();message(initialPlaceholder?`Bibliothèque « ${name} » chargée.`:`Bibliothèque « ${name} » importée.`);}}catch(_){alert('Ce fichier n’est pas une sauvegarde actuelle identifiée de Ma bibliothèque.');}e.target.value='';};
+  $('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const incoming=JSON.parse(await file.text());if(!valid(incoming))throw Error('invalid');const name=incoming.libraryName.trim(),initialPlaceholder=libraries.length===1&&isEmptyLibrary(activeLibrary()),existing=libraries.find(l=>l.name===name);const question=initialPlaceholder?`Charger « ${name} » comme unique bibliothèque ?`:existing?`Mettre à jour « ${name} » avec ce fichier JSON ?\n\nLa bibliothèque locale du même nom sera remplacée, sans créer de doublon.`:`Ajouter « ${name} » comme nouvelle bibliothèque distincte ?`;if(confirm(question)){if(initialPlaceholder){libraries=[{id:activeLibraryId,name,data:incoming}];}else if(existing){activeLibraryId=existing.id;}else{activeLibraryId=id();libraries.push({id:activeLibraryId,name,data:incoming});}data=incoming;incoming.libraryName=name;selectedCases.clear();selectedSeparators.clear();selectedBook=null;selectedLocation=null;placing=false;removingBook=false;start=null;mode=data.facadeLocked?'view':'select';clipboard=null;history=[];changed();message(existing&&!initialPlaceholder?`Bibliothèque « ${name} » mise à jour.`:initialPlaceholder?`Bibliothèque « ${name} » chargée.`:`Bibliothèque « ${name} » importée.`);}}catch(_){alert('Ce fichier n’est pas une sauvegarde actuelle identifiée de Ma bibliothèque.');}e.target.value='';};
   render();
 })();

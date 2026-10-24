@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="style.css?v=30">
 </head>
 <body>
-<header class="topbar"><div class="app-identity"><div class="app-brand"><img src="icons/icon-192.png" alt="Logo JA"><h1>JA-Bibliothèque</h1><button id="refresh-app" class="quiet" type="button">Actualiser l’application</button></div><div class="backup"><button id="export" class="quiet">Exporter</button><label class="quiet import-control">Importer<input id="import" type="file" accept=".json,application/json" aria-label="Importer une sauvegarde JSON"></label><button id="notice-button" class="quiet notice-button" type="button">Notice</button><button id="fields-button" class="quiet" type="button">Paramètres</button></div></div><span id="save-status" class="save-status">● Enregistré sur cet appareil</span></header>
+<header class="topbar"><div class="app-identity"><div class="app-brand"><img src="icons/icon-192.png" alt="Logo JA"><h1>JA-Bibliothèque</h1><button id="refresh-app" class="quiet" type="button">Actualiser l’application</button></div><div class="backup"><button id="export" class="quiet" title="Enregistrer la bibliothèque dans son fichier JSON">Enregistrer</button><label class="quiet import-control">Importer<input id="import" type="file" accept=".json,application/json" aria-label="Importer ou mettre à jour une bibliothèque JSON"></label><button id="notice-button" class="quiet notice-button" type="button">Notice</button><button id="fields-button" class="quiet" type="button">Paramètres</button></div></div><span id="save-status" class="save-status">● Enregistré sur cet appareil</span></header>
 <main>
   <div class="layout">
     <section class="panel facade-panel" aria-labelledby="facade-title">
@@ -41,7 +41,7 @@
 <dialog id="details-dialog" aria-labelledby="details-title"><div class="dialog-heading"><div><span class="section-number">FICHE DU LIVRE</span><h2 id="details-title"></h2></div><button type="button" class="close" data-close="details-dialog" aria-label="Fermer">×</button></div><dl class="book-details"><div><dt>Auteur</dt><dd id="details-author"></dd></div><div><dt id="details-param1-label"></dt><dd id="details-param1"></dd></div><div><dt id="details-param2-label"></dt><dd id="details-param2"></dd></div><div><dt>Emplacement</dt><dd id="details-location"></dd></div></dl><div class="dialog-actions"><button type="button" id="details-delete" class="quiet danger">Supprimer le livre</button><button type="button" id="details-edit" class="primary">Modifier</button><button type="button" class="quiet" data-close="details-dialog">Fermer</button></div></dialog>
 <dialog id="fields-dialog"><form id="fields-form"><div class="dialog-heading"><div><span class="section-number">PERSONNALISATION</span><h2>Mes paramètres</h2></div><button type="button" class="close" data-close="fields-dialog" aria-label="Fermer">×</button></div><p>Choisissez le nom du paramètre libre de vos livres, par exemple « Genre » ou « Collection ».</p><label>Paramètre libre <input name="field1" required maxlength="40"></label><div class="dialog-actions"><button type="button" class="quiet" data-close="fields-dialog">Annuler</button><button class="primary">Enregistrer</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="app.js?v=49"></script>
+<script src="app.js?v=50"></script>
 <script>
   document.getElementById('refresh-app').addEventListener('click', async () => {
     const button = document.getElementById('refresh-app');
