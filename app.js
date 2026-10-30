@@ -13,6 +13,13 @@
   function matchesLocation(location, selected, c) {
     return !!location && !!selected && location.x === selected.x && location.y === selected.y;
   }
+  function selectLocation(location) {
+    const wasSelected = !!selectedLocation && matchesLocation(selectedLocation, location) && selectedLocation.caseId === location.caseId;
+    selectedBook = null;
+    selectedLocation = wasSelected ? null : location;
+    render();
+    message(wasSelected ? 'Tous les livres sont affichés.' : `Livres à l’emplacement ${locationIndex(location.x, location.y)}.`);
+  }
 
   function valid(v) {
     if (v && ((v.facadeLocked !== undefined && typeof v.facadeLocked !== 'boolean') || ['facadeScale','facadeScaleX','facadeScaleY'].some(key=>v[key] !== undefined && (!Number.isFinite(v[key]) || v[key] < 12 || v[key] > 120)))) return false;
@@ -83,7 +90,7 @@
           Object.assign(btn.style,{left:(col/c.w*100)+'%',top:(row/c.h*100)+'%',width:(100/c.w)+'%',height:(100/c.h)+'%'});
           btn.setAttribute('aria-label',`Emplacement ${locationIndex(x,y)}`);btn.title=locationIndex(x,y);
           if(placing) btn.addEventListener('click',()=>{checkpoint();book.location={caseId:c.id,x,y};selectedLocation=null;placing=false;changed();message('Placement enregistré.');});
-          else if(data.facadeLocked) btn.addEventListener('click',()=>{selectedBook=null;selectedLocation={caseId:c.id,x,y};render();});
+          else if(data.facadeLocked) btn.addEventListener('click',()=>selectLocation({caseId:c.id,x,y}));
           else btn.style.pointerEvents='none';
           el.append(btn);
         }
@@ -96,7 +103,7 @@
     for(let x=0;x<=data.cols;x++){const line=document.createElement('span');line.className='grid-line vertical';line.style.left=(x*stepX)+'px';canvas.append(line);}
     for(let y=0;y<=data.rows;y++){const line=document.createElement('span');line.className='grid-line horizontal';line.style.top=(y*stepY)+'px';canvas.append(line);}
     data.separators.forEach(s=>{const selectable=mode==='select'&&!placing;const line=document.createElement(selectable?'button':'span');if(selectable)line.type='button';line.className=`separator ${s.orientation}${selectable?' selectable':''}${selectedSeparators.has(s.id)?' selected':''}`;line.style.left=(s.x*stepX)+'px';line.style.top=(s.y*stepY)+'px';if(s.orientation==='horizontal')line.style.width=(s.length*stepX)+'px';else line.style.height=(s.length*stepY)+'px';if(selectable){line.setAttribute('aria-label',`Sélectionner la ligne rouge ${s.orientation==='horizontal'?'horizontale':'verticale'}`);line.setAttribute('aria-pressed',selectedSeparators.has(s.id));line.onclick=event=>{if(event.shiftKey){selectedSeparators.has(s.id)?selectedSeparators.delete(s.id):selectedSeparators.add(s.id);}else{const wasOnlySelected=selectedSeparators.size===1&&selectedSeparators.has(s.id)&&!selectedCases.size;selectedCases.clear();selectedSeparators.clear();if(!wasOnlySelected)selectedSeparators.add(s.id);}render();$('canvas').focus({preventScroll:true});};}canvas.append(line);});
-    if(placing || data.facadeLocked || shownLocation) for(let y=0;y<data.rows;y++) for(let x=0;x<data.cols;x++){const selected=matchesLocation(shownLocation,{x,y}),occupied=selected&&data.books.some(b=>matchesLocation(b.location,{x,y}));const cell=document.createElement('button');cell.type='button';cell.className='grid-cell'+(selected?' selected':'')+(occupied?' occupied':'');Object.assign(cell.style,{left:(x*stepX)+'px',top:(y*stepY)+'px',width:stepX+'px',height:stepY+'px'});cell.setAttribute('aria-label',`Emplacement ${locationIndex(x,y)}`);cell.title=locationIndex(x,y);if(placing)cell.onclick=()=>{checkpoint();book.location={x,y};selectedLocation=null;placing=false;removingBook=false;changed();message('Placement enregistré.');};else cell.onclick=()=>{selectedBook=null;selectedLocation={x,y};render();};canvas.append(cell);}
+    if(placing || data.facadeLocked || shownLocation) for(let y=0;y<data.rows;y++) for(let x=0;x<data.cols;x++){const selected=matchesLocation(shownLocation,{x,y}),occupied=selected&&data.books.some(b=>matchesLocation(b.location,{x,y}));const cell=document.createElement('button');cell.type='button';cell.className='grid-cell'+(selected?' selected':'')+(occupied?' occupied':'');Object.assign(cell.style,{left:(x*stepX)+'px',top:(y*stepY)+'px',width:stepX+'px',height:stepY+'px'});cell.setAttribute('aria-label',`Emplacement ${locationIndex(x,y)}`);cell.title=locationIndex(x,y);if(placing)cell.onclick=()=>{checkpoint();book.location={x,y};selectedLocation=null;placing=false;removingBook=false;changed();message('Placement enregistré.');};else cell.onclick=()=>selectLocation({x,y});canvas.append(cell);}
     if(data.facadeLocked){for(const [direction,label,symbol] of [['horizontal','Agrandir ou réduire la façade vers la droite','↔'],['vertical','Agrandir ou réduire la façade vers le bas','↕']]){const handle=document.createElement('button');handle.type='button';handle.className=`scale-handle ${direction}`;handle.dataset.direction=direction;handle.setAttribute('aria-label',label);handle.title=direction==='horizontal'?'Tirez vers la droite ou la gauche':'Tirez vers le bas ou le haut';handle.textContent=symbol;handle.onpointerdown=event=>startScale(event,direction);handle.onkeydown=scaleByKeyboard;canvas.append(handle);}}
     for(let y=0;y<=data.rows;y++) for(let x=0;x<=data.cols;x++) {
       if(!placing && (mode==='line-horizontal'||mode==='line-vertical')) { const button=document.createElement('button'); button.type='button'; button.className='intersection'+(start && start.x===x && start.y===y?' start':''); button.style.left=x*stepX+'px';button.style.top=y*stepY+'px';button.setAttribute('aria-label',`Croisement à ${x} petites cases du bord gauche et ${y} du haut`); button.onclick=()=>intersection(x,y);canvas.append(button); }
@@ -130,9 +137,10 @@
     document.querySelectorAll('[data-sort]').forEach(button=>{const active=button.dataset.sort===sortBy;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     const query=$('search').value.trim().toLocaleLowerCase('fr');
     $('search-button').title=query ? 'Effacer la recherche et afficher tous les livres' : 'Saisir une recherche';
-    const books=data.books.filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
+    const books=data.books.filter(b=>!selectedLocation || matchesLocation(b.location,selectedLocation)).filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
+    $('book-count').textContent=selectedLocation ? books.length : data.books.length;
     const list=$('books');list.replaceChildren();
-    if(!books.length){const empty=document.createElement('div');empty.className='empty';const strong=document.createElement('strong');strong.textContent=data.books.length?'Aucun livre trouvé':'Votre catalogue commence ici';empty.append(strong,document.createTextNode(data.books.length?'Essayez une autre recherche.':'Ajoutez votre premier livre pour le retrouver facilement.'));list.append(empty);return;}
+    if(!books.length){const empty=document.createElement('div');empty.className='empty';const strong=document.createElement('strong');strong.textContent=data.books.length?(selectedLocation?`Aucun livre à l’emplacement ${locationIndex(selectedLocation.x,selectedLocation.y)}`:'Aucun livre trouvé'):'Votre catalogue commence ici';empty.append(strong,document.createTextNode(data.books.length?(selectedLocation?'Cliquez de nouveau sur cette petite case pour réafficher tous les livres.':'Essayez une autre recherche.'):'Ajoutez votre premier livre pour le retrouver facilement.'));list.append(empty);return;}
     books.forEach(b=>{
       const row=document.createElement('div');row.className='book'+(b.param2.trim()?' loaned':'')+(selectedBook===b.id || (selectedLocation && matchesLocation(b.location,selectedLocation))?' selected':'');
       const main=document.createElement('button');main.type='button';main.className='book-main';main.textContent=b.title;main.setAttribute('aria-label',`Ouvrir la fiche de ${b.title}`);
@@ -181,6 +189,7 @@
   function startPlacement(){const book=data.books.find(b=>b.id===selectedBook);if(!book)return;placing=true;removingBook=false;start=null;selectedCases.clear();selectedSeparators.clear();render();if(matchMedia('(max-width: 900px)').matches) $('facade-title').scrollIntoView({behavior:'smooth',block:'start'});}
   $('place-book').onclick=startPlacement;
   $('move-book').onclick=startPlacement;
+  $('show-all-books').onclick=()=>{selectedLocation=null;render();message('Tous les livres sont affichés.');};
   $('details-edit').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(!book)return;$('details-dialog').close();openBook(book);};
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;removingBook=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
