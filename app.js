@@ -200,7 +200,7 @@
   $('add-book').onclick=()=>openBook();
   $('search-button').onclick=()=>{const search=$('search');if(search.value){search.value='';renderBooks();message('Tous les livres sont affichés.');}else search.focus();};
   document.querySelectorAll('[data-sort]').forEach(button=>button.onclick=()=>{sortBy=button.dataset.sort;renderBooks();});
-  $('book-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,values={};for(const k of ['title','author','param1','param2'])values[k]=f.elements[k].value.trim();if(!values.title)return;checkpoint();if(editing)Object.assign(data.books.find(b=>b.id===editing),values);else data.books.push({id:id(),...values,location:null});$('book-dialog').close();changed();message('Livre enregistré.');};
+  $('book-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,values={};for(const k of ['title','author','param1','param2'])values[k]=f.elements[k].value.trim();if(!values.title)return;checkpoint();if(editing)Object.assign(data.books.find(b=>b.id===editing),values);else{data.books.push({id:id(),...values,location:null});$('search').value=values.title;selectedLocation=null;}$('book-dialog').close();changed();message(editing?'Livre enregistré.':'Livre ajouté et affiché dans la liste.');};
   $('fields-button').onclick=()=>{const f=$('fields-form');f.elements.field1.value=data.fields[0];$('fields-dialog').showModal();};
   $('fields-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,a=f.elements.field1.value.trim();if(!a)return;checkpoint();data.fields=[a,'Prêté à'];$('fields-dialog').close();changed();};
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
