@@ -141,7 +141,7 @@
     document.querySelectorAll('[data-sort]').forEach(button=>{const active=button.dataset.sort===sortBy;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     const query=$('search').value.trim().toLocaleLowerCase('fr');
     $('search-button').title=query ? 'Effacer la recherche et afficher tous les livres' : 'Saisir une recherche';
-    const books=data.books.filter(b=>!selectedLocation || matchesLocation(b.location,selectedLocation)).filter(b=>!query || (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
+    const books=data.books.filter(b=>query ? (filter.value==='all'?['title','author','param1','param2']:[filter.value]).some(k=>b[k].toLocaleLowerCase('fr').includes(query)) : (!selectedLocation || matchesLocation(b.location,selectedLocation))).sort((a,b)=>a[sortBy].localeCompare(b[sortBy],'fr',{sensitivity:'base'}));
     $('book-count').textContent=selectedLocation ? books.length : data.books.length;
     const list=$('books');list.replaceChildren();
     if(!books.length){const empty=document.createElement('div');empty.className='empty';const strong=document.createElement('strong');strong.textContent=data.books.length?(selectedLocation?`Aucun livre à l’emplacement ${locationIndex(selectedLocation.x,selectedLocation.y)}`:'Aucun livre trouvé'):'Votre catalogue commence ici';empty.append(strong,document.createTextNode(data.books.length?(selectedLocation?'Cliquez de nouveau sur cette petite case pour réafficher tous les livres.':'Essayez une autre recherche.'):'Ajoutez votre premier livre pour le retrouver facilement.'));list.append(empty);return;}
