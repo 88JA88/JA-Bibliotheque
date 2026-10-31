@@ -189,7 +189,7 @@
   function startPlacement(){const book=data.books.find(b=>b.id===selectedBook);if(!book)return;placing=true;removingBook=false;start=null;selectedCases.clear();selectedSeparators.clear();render();if(matchMedia('(max-width: 900px)').matches) $('facade-title').scrollIntoView({behavior:'smooth',block:'start'});}
   $('place-book').onclick=startPlacement;
   $('move-book').onclick=startPlacement;
-  $('show-all-books').onclick=()=>{selectedLocation=null;render();message('Tous les livres sont affichés.');};
+  $('show-all-books').onclick=()=>{selectedLocation=null;$('search').value='';render();message('Tous les livres sont affichés.');};
   $('details-edit').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(!book)return;$('details-dialog').close();openBook(book);};
   $('details-delete').onclick=()=>{const book=data.books.find(b=>b.id===selectedBook);if(book && confirm(`Supprimer « ${book.title} » ?`)){checkpoint();data.books=data.books.filter(b=>b.id!==book.id);selectedBook=null;placing=false;removingBook=false;$('details-dialog').close();changed();}};
   $('notice-button').onclick=()=>$('notice-dialog').showModal();
