@@ -17,6 +17,7 @@
     const wasSelected = !!selectedLocation && matchesLocation(selectedLocation, location) && selectedLocation.caseId === location.caseId;
     selectedBook = null;
     selectedLocation = wasSelected ? null : location;
+    $('search').value = '';
     render();
     message(wasSelected ? 'Tous les livres sont affichés.' : `Livres à l’emplacement ${locationIndex(location.x, location.y)}.`);
   }
